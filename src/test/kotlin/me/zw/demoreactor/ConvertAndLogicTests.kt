@@ -127,6 +127,79 @@ class ConvertAndLogicTests {
             .verifyComplete()
     }
 
+
+    @Test
+    fun flatMap2() {
+        val fruitList =
+            listOf("apple", "banana", "melon", "mango", "grape", "strawberry", "eggplant", "watermelon", "kiwi")
+        val fruitListUpper = fruitList.map { it.toUpperCase() }
+
+        val fruitFlux =
+            Flux.fromIterable(fruitList)
+                .window(1)
+                .flatMap {
+                    it.map { str: String ->
+                        Thread.sleep(1000) // 1초짜리 요청
+
+                        str.toUpperCase()
+                    }.subscribeOn(Schedulers.parallel()) // map 작업을 비동기적으로
+                }
+
+        // 순서 보장X
+        StepVerifier.create(fruitFlux)
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .expectNextMatches { fruitListUpper.contains(it) }
+            .verifyComplete()
+//            .expectNext("APPLE")
+//            .expectNext("BANANA")
+//            .expectNext("MELON")
+//            .expectNext("MANGO")
+//            .expectNext("GRAPE")
+//            .expectNext("STRAWBERRY")
+//            .expectNext("EGGPLANT")
+//            .expectNext("WATERMELON")
+//            .expectNext("KIWI")
+//            .verifyComplete()
+    }
+
+    @Test
+    fun flatMapSequential() {
+        val fruitList =
+            listOf("apple", "banana", "melon", "mango", "grape", "strawberry", "eggplant", "watermelon", "kiwi")
+        val fruitListUpper = fruitList.map { it.toUpperCase() }
+
+        val fruitFlux =
+            Flux.fromIterable(fruitList)
+                .window(1)
+                .flatMapSequential {
+                    it.map { str: String ->
+                        Thread.sleep(1000)
+
+                        str.toUpperCase()
+                    }.subscribeOn(Schedulers.parallel())
+                }
+
+        // 순서 보장
+        StepVerifier.create(fruitFlux)
+            .expectNext("APPLE")
+            .expectNext("BANANA")
+            .expectNext("MELON")
+            .expectNext("MANGO")
+            .expectNext("GRAPE")
+            .expectNext("STRAWBERRY")
+            .expectNext("EGGPLANT")
+            .expectNext("WATERMELON")
+            .expectNext("KIWI")
+            .verifyComplete()
+    }
+
     @Test
     fun buffer() {
         val fruitFlux = Flux.just("apple", "orange", "banana", "kiwi", "strawberry")

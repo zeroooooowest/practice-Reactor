@@ -17,6 +17,9 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-hateoas") {
+        exclude("org.springframework.boot:spring-boot-starter-web")
+    }
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
     implementation("org.mongodb:mongodb-driver-sync")
@@ -28,8 +31,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     implementation("au.com.console:kassava:2.1.0")
-    implementation("io.projectreactor.tools:blockhound:1.0.6.RELEASE")
-    testImplementation("io.projectreactor.tools:blockhound-junit-platform:1.0.6.RELEASE")
+//    implementation("io.projectreactor.tools:blockhound:1.0.6.RELEASE")
+//    testImplementation("io.projectreactor.tools:blockhound-junit-platform:1.0.6.RELEASE")
 
     testImplementation("io.mockk:mockk:1.12.0")
     implementation("com.ninja-squad:springmockk:3.0.1")
